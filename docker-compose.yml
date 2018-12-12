@@ -1,0 +1,39 @@
+version: "3"
+
+services:
+  redis:
+    image: redis:latest
+    restart: always
+    networks:
+      - backend
+
+  node:
+    build:
+      context: ./container/nodejs8
+    volumes:
+      - /data/projects:/data/projects
+
+  php7.2-fpm:
+    build:
+      context: container/php7.2-fpm
+    restart: always
+    networks:
+      - backend
+    volumes:
+      - /data/projects:/data/projects
+
+  apache2.4:
+    build:
+      context: ./container/apache2.4
+    restart: always
+    networks:
+      - frontend
+      - backend
+    ports:
+      - "80:80"
+    volumes:
+      - /data/projects:/data/projects
+
+networks:
+  frontend:
+  backend:
