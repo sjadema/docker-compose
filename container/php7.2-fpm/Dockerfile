@@ -1,5 +1,7 @@
 FROM php:7.2-fpm
 
+MAINTAINER Sjoerd Adema <sjoerd@triz.nu>
+
 # We don't have a frontend
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -9,7 +11,9 @@ RUN apt-get update && apt-get install -y \
     libjpeg-dev \
     libpng-dev \
     libicu-dev \
-    zlib1g-dev
+    zlib1g-dev \
+    unzip \
+    zip
 
 # Build & enable PHP modules
 RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
@@ -20,10 +24,13 @@ RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-di
 #    gd
 
 # Enable PECL modules
-RUN pecl install igbinary redis  \
-    && docker-php-ext-enable \
+RUN pecl install \
     igbinary \
-    redis
+    redis \
+    xdebug \
+    && docker-php-ext-enable \
+   igbinary \
+   redis
 
 # Copy correct ini settings
 COPY resources/usr/local/etc/php/php.ini $PHP_INI_DIR/php.ini
