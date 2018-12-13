@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libicu-dev \
     zlib1g-dev \
+    libpq-dev \
     unzip \
     zip
 
@@ -20,17 +21,18 @@ RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-di
     && docker-php-ext-configure opcache --enable-opcache \
     && docker-php-ext-install -j$(nproc) \
     opcache \
-    intl
+    intl \
+    pdo_pgsql
 #    gd
 
 # Enable PECL modules
-RUN pecl install \
-    igbinary \
-    redis \
-    xdebug \
-    && docker-php-ext-enable \
-   igbinary \
-   redis
+RUN pecl install igbinary && docker-php-ext-enable igbinary
+RUN pecl install redis && docker-php-ext-enable redis
+RUN pecl install xdebug
 
 # Copy correct ini settings
 COPY resources/usr/local/etc/php/php.ini $PHP_INI_DIR/php.ini
+
+# Make sure the correct IDs map on the user
+RUN groupmod -g 1000 www-data
+RUN usermod  -u 1000 www-data

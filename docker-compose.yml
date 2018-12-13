@@ -7,6 +7,15 @@ services:
     networks:
       - backend
 
+  database:
+    image: postgres:latest
+    restart: always
+    networks:
+      - backend
+    environment:
+      POSTGRES_USER: db_user
+      POSTGRES_PASSWORD: db_password
+
   node:
     build:
       context: ./container/nodejs8
